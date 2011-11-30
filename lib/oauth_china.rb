@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift File.dirname(__FILE__)
 require 'rubygems'
 require 'oauth'
 require 'mime/types'
@@ -5,7 +6,6 @@ require 'net/http'
 require 'cgi'
 require 'json'
 require 'active_support/core_ext'
-
 require File.expand_path(File.join(File.dirname(__FILE__), "oauth_china/multipart"))
 require File.expand_path(File.join(File.dirname(__FILE__), "oauth_china/upload"))
 
@@ -55,15 +55,15 @@ module OauthChina
 
     def key; config['key'];  end
     def secret; config['secret']; end
-    def url; config['url']; end
+    def url; config['url'] || ''; end
     def callback; config["callback"]; end
 
     def config
       CONFIG[self.name] ||= lambda do
         require 'yaml'
-        filename = "#{Rails.root}/config/oauth/#{self.name}.yml"
+        filename = "#{Rails.root}/config/oauth.yml"
         file     = File.open(filename)
-        yaml     = YAML.load(file)
+        yaml     = YAML.load(file)[self.name]
         return yaml[Rails.env]
       end.call
     end
@@ -87,4 +87,5 @@ module OauthChina
   autoload :Qq,             'oauth_china/strategies/qq'
   autoload :Sohu,           'oauth_china/strategies/sohu'
   autoload :Netease,        'oauth_china/strategies/netease'
+  autoload :Kaixin,        'oauth_china/strategies/kaixin'
 end
